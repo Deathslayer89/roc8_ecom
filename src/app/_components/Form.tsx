@@ -123,7 +123,7 @@ const Form: React.FC = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="Enter"
+                    placeholder="John wick"
                 />
             </div>
             <div className="mb-4">
@@ -135,7 +135,7 @@ const Form: React.FC = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="Enter"
+                    placeholder="john@roc8.com"
                 />
             </div>
             <div className="mb-6">
@@ -147,7 +147,7 @@ const Form: React.FC = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    placeholder="Enter"
+                    placeholder="*********"
                 />
             </div>
             <div>
