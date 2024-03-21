@@ -7,7 +7,7 @@ import { set } from 'zod';
 import { api } from '~/trpc/react';
 import LoadingComponent from './LoadingComponent';
 
-const CategoryList = ({ userEmail }) => {
+const CategoryList = ({ userEmail }:{userEmail:string}) => {
   const { data: userId, isLoading: isLoadingUserId } = api.category.getUserIdByEmail.useQuery({ email: userEmail });
 
   const [page, setPage] = useState(0);
