@@ -3,7 +3,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { set } from 'zod';
 import { api } from '~/trpc/react';
 import LoadingComponent from './LoadingComponent';
 const CategoryList = ({ userEmail }: { userEmail: string }) => {

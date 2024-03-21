@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from "~/trpc/react";
-import { genSaltSync, hashSync } from "bcrypt-ts";
 
 interface FormData {
     email: string;
@@ -26,7 +25,7 @@ const Login: React.FC = () => {
     };
 
     const router = useRouter();
-    const handleSignUp = () => {
+    const handleSignUp =() => {
         router.push('/signup');
     };
 

@@ -1,76 +1,5 @@
-// "use client";
-// import React, { useState, useContext } from 'react';
-// import { useRouter } from 'next/navigation';
-// import UserContext from '../context/UserContext';
-// import { api } from '../../trpc/react'
-// const OTPVerificationPage: React.FC = () => {
-
-//   const router = useRouter();
-//   const [otp, setOtp] = useState('');
-//   const { email, setEmail } = useContext(UserContext);
-
-
-//   const verifyOTP = api.auth.verifyOTP.useMutation();
-
-
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setOtp(e.target.value);
-//   };
-
-
-//   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-
-//     console.log(otp);
-//     try {
-
-//       const user = await verifyOTP.mutateAsync({ email, otp });
-
-//       setEmail('');
-//       router.push('/dashboard');
-//     } catch (e) {
-//       console.log(e)
-//     }
-//   };
-
-//   function getCookie(name): string {
-//     const value = `; ${document.cookie}`;
-//     const parts = value.split(`; ${name}=`);
-//     if (parts.length === 2) {
-//       console.log(parts.pop().split(';').shift())
-
-//       return parts.pop().split(';').shift();
-//     }
-//   }
-
-//   const currentUser = getCookie('currUser');
-
-
-//   if (email === '' || !currentUser || currentUser === '') {
-//     router.push('/');
-//   }
-
-//   return (
-//     <div>
-//       <h1>Verify OTP</h1>
-//       <p>Enter the 6-digit code you received on {email}.</p>
-//       <form onSubmit={handleSubmit}>
-//         <input
-//           type="text"
-//           placeholder="OTP"
-//           value={otp}
-//           onChange={handleChange}
-//           maxLength={8}
-//         />
-//         <button type="submit">Verify</button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default OTPVerificationPage;
 "use client";
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import UserContext from '../context/UserContext';
 import { api } from '../../trpc/react';
@@ -80,6 +9,17 @@ const OTPVerificationPage: React.FC = () => {
     const [otp, setOtp] = useState('');
     const { email, setEmail } = useContext(UserContext);
     const verifyOTP = api.auth.verifyOTP.useMutation();
+
+    useEffect(() => {
+        // This code will run only in the browser
+        const currentUser = getCookie('currUser');
+        console.log(currentUser);
+        if (email === '') {
+            router.push('/');
+        }
+
+
+    }, []); // Empty dependency array ensures this effect runs only once after the initial render
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setOtp(e.target.value);
@@ -98,23 +38,21 @@ const OTPVerificationPage: React.FC = () => {
             console.log(e);
         }
     };
+
     function getCookie(name: string): string {
+        if (typeof document === 'undefined') {
+            return ''; // If document is not available (server-side rendering), return an empty string
+        }
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) {
-          const cookieValue = parts.pop()?.split(';').shift();
-          if (cookieValue !== undefined) {
-            console.log(cookieValue);
-            return cookieValue;
-          }
+            const cookieValue = parts.pop()?.split(';').shift();
+            if (cookieValue !== undefined) {
+                console.log(cookieValue);
+                return cookieValue;
+            }
         }
         return '';
-      }
-
-    const currentUser = getCookie('currUser');
-    console.log(currentUser);
-    if ( email==='') {
-        router.push('/');
     }
 
     return (
