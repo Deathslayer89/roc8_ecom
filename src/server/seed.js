@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { PrismaClient } from '@prisma/client'
 import {faker} from '@faker-js/faker'
 
@@ -5,7 +7,12 @@ const prisma = new PrismaClient();
 
 async function seedProducts() {
   try {
+    //  await prisma.user.deleteMany();
+    //  await prisma.potentialUser.deleteMany();
+    // await prisma.category.deleteMany();
+    // await prisma.userCategory.deleteMany();
     const uniqueProductNames = new Set();
+
 
     while (uniqueProductNames.size < 100) {
       const productName = faker.company.name()

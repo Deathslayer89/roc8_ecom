@@ -3,9 +3,22 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import { generateOTP, hashPassword } from "~/server/utils";
+import { generateOTP } from "~/server/utils";
 
 export const categoryRouter = createTRPCRouter({
+    getUserIdByEmail: publicProcedure
+        .input(z.object({ email: z.string().email() }))
+        .query(async ({ input, ctx }) => {
+            const { email } = input;
+            const user = await ctx.db.user.findUnique({
+                where: { email },
+                select: { id: true },
+            })
+            if (!user) {
+                throw new Error("user not found");
+            }
+            return user.id;
+        }),
     category: publicProcedure
         .input(z.object({ skip: z.number().min(0).default(0), take: z.number().min(1).max(10).default(6) }))
         .query(async ({ input, ctx }) => {
@@ -13,6 +26,16 @@ export const categoryRouter = createTRPCRouter({
             const categories = await ctx.db.category.findMany({
                 skip, take,
             });
+            return categories;
+        }),
+    userCategories: publicProcedure
+        .input(z.object({ userid: z.number() }))
+        .query(async ({ input, ctx }) => {
+            const { userid } = input;
+            const categories = await ctx.db.userCategory.findMany({
+                where: { userId: userid },
+                include: { category: true },
+            })
             return categories;
         }),
 
@@ -36,9 +59,9 @@ export const categoryRouter = createTRPCRouter({
                         }
                     }
                 })
-            }else{
+            } else {
                 await ctx.db.userCategory.create({
-                    data:{
+                    data: {
                         userId,
                         categoryId,
                     }

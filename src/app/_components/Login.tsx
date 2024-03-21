@@ -1,8 +1,10 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import UserContext from '../context/UserContext';
 import { api } from "~/trpc/react";
 import { genSaltSync, hashSync } from "bcrypt-ts";
+
 
 interface FormData {
     email: string;
@@ -10,12 +12,11 @@ interface FormData {
 }
 
 const Login: React.FC = () => {
+
     const [formData, setFormData] = useState<FormData>({
         email: '',
         password: ''
     });
-
-    const [showPassword, setShowPassword] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -27,24 +28,25 @@ const Login: React.FC = () => {
 
     const router = useRouter();
     const handleSignUp = () => {
-        router.push('/signup');
+        router.push('/');
     };
 
-    const validateLogin = api.auth.validateLogin.useQuery({ email: formData.email, password: formData.password });
-
+   
     const handleLogin = async () => {
         console.log('Logging in with:', formData);
         const emailError = validateEmail(formData.email);
         const passwordError = validatePassword(formData.password);
         const hash = hashSync(formData.password, genSaltSync(10));
 
-        if (!emailError && !passwordError && validateLogin.status == 'success') {
-            console.log('in login handle')
-            document.cookie = `currUser=${formData.email}; expires=` + new Date(Date.now() + 86400 * 1000).toUTCString();
-            router.push('/category');
+        if (!emailError && !passwordError) {
+            if (api.auth.validateLogin.useQuery({ email: formData.email, password: formData.password })) {
+                console.log('logindone')
+                router.push('/category');
+            } else {
+                console.log('loginfailure')
+            }
         }
     };
-
     const validateEmail = (email: string): string | null => {
         if (!email) {
             return 'Email is required';
@@ -68,14 +70,14 @@ const Login: React.FC = () => {
         }
         return null;
     };
-
     return (
-        <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
-            <h1 className="text-2xl font-semibold mb-4 text-center">Login</h1>
-            <h2 className="text-lg font-semibold mb-2 text-center">Welcome back to ECOMMERCE</h2>
-            <p className="text-center mb-6">The next gen business marketplace</p>
+        <div className="max-w-xs mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+            <h1 className="text-xl font-semibold mb-4">Login</h1>
+            <h2>Welcome back to Ecommerce</h2>
+            <p> The nextgen business marketplace. </p>
 
             <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">Email</label>
                 <input
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="email"
@@ -86,38 +88,32 @@ const Login: React.FC = () => {
                     placeholder="Email"
                 />
             </div>
-            <div className="mb-6 relative">
+            <div className="mb-6">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">Password</label>
                 <input
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Password"
                 />
-                <button
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-500 hover:text-gray-700 focus:outline-none focus:shadow-outline"
-                    onClick={() => setShowPassword(!showPassword)}
-                >
-                    {showPassword ? 'Hide' : 'Show'}
-                </button>
             </div>
-            <button
-                className="w-full bg-black text-white font-semibold py-2 px-4 rounded-md mb-4 focus:outline-none focus:shadow-outline"
-                onClick={handleLogin}
-            >
-                LOGIN
-            </button>
-            <p className="text-center">
-                Don't have an Account?{' '}
+            <div className="flex justify-between">
                 <button
-                    className="text-blue-500 hover:text-blue-700 font-semibold"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     onClick={handleSignUp}
                 >
-                    SIGN UP
+                    Sign Up
                 </button>
-            </p>
+                <button
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={handleLogin}
+                >
+                    Log In
+                </button>
+            </div>
         </div>
     );
 };
