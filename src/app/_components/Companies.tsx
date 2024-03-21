@@ -6,26 +6,24 @@ import { useEffect, useState } from 'react';
 import { set } from 'zod';
 import { api } from '~/trpc/react';
 import LoadingComponent from './LoadingComponent';
-
-const CategoryList = ({ userEmail }:{userEmail:string}) => {
+const CategoryList = ({ userEmail }: { userEmail: string }) => {
   const { data: userId, isLoading: isLoadingUserId } = api.category.getUserIdByEmail.useQuery({ email: userEmail });
-
+  const resolvedUserId = userId ?? 0;
   const [page, setPage] = useState(0);
-
   const { data: categories, isLoading } = api.category.category.useQuery({
     skip: page * 6,
     take: 6,
   }, {
-    enabled: !!userId,
+    enabled: !!resolvedUserId,
   });
 
   const { data: userCategories, refetch: refetchUserCategories } = api.category.userCategories.useQuery({
-    userid: userId || 0,
+    userid: resolvedUserId || 0,
   }, {
-    enabled: !!userId,
+    enabled: !!resolvedUserId,
   })
 
-  console.log(userId);
+  console.log(resolvedUserId);
   console.log(userCategories)
 
   const [currCategoryIds, setCurrCategoryIds] = useState(new Set());
@@ -33,8 +31,8 @@ const CategoryList = ({ userEmail }:{userEmail:string}) => {
 
   const router = useRouter();
   const toggleCategory = api.category.toggleCategory.useMutation({
-    onSuccess: async() => {
-     await refetchUserCategories(); // Refetch userCategories after successful mutation
+    onSuccess: async () => {
+      await refetchUserCategories(); // Refetch userCategories after successful mutation
       updateCurrCategoryIds(); // Update currCategoryIds
     }
   });
@@ -44,7 +42,7 @@ const CategoryList = ({ userEmail }:{userEmail:string}) => {
   const pageRange = Array.from({ length: 5 }, (_, i) => i + Math.max(0, page - 2));
 
   const handleCategoryToggle = async (categoryId: number) => {
-    await toggleCategory.mutateAsync({ userId, categoryId });
+    await toggleCategory.mutateAsync({ userId: resolvedUserId, categoryId });
   };
 
   const handlePageChange = (newPage: number) => {
@@ -75,7 +73,7 @@ const CategoryList = ({ userEmail }:{userEmail:string}) => {
   };
 
   if (isLoading) {
-    return <LoadingComponent/>
+    return <LoadingComponent />
   }
 
 

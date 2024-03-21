@@ -98,15 +98,18 @@ const OTPVerificationPage: React.FC = () => {
             console.log(e);
         }
     };
-
-    function getCookie(name): string {
+    function getCookie(name: string): string {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) {
-            console.log(parts.pop().split(';').shift());
-            return parts.pop().split(';').shift();
+          const cookieValue = parts.pop()?.split(';').shift();
+          if (cookieValue !== undefined) {
+            console.log(cookieValue);
+            return cookieValue;
+          }
         }
-    }
+        return '';
+      }
 
     const currentUser = getCookie('currUser');
     console.log(currentUser);
@@ -127,7 +130,7 @@ const OTPVerificationPage: React.FC = () => {
                             key={index}
                             type="text"
                             maxLength={1}
-                            value={otp[index] || ''}
+                            value={otp[index] ?? ''}
                             onChange={(e) => {
                                 const newOtp = otp.split('');
                                 newOtp[index] = e.target.value;

@@ -36,7 +36,6 @@ const Login: React.FC = () => {
         console.log('Logging in with:', formData);
         const emailError = validateEmail(formData.email);
         const passwordError = validatePassword(formData.password);
-        const hash = hashSync(formData.password, genSaltSync(10));
 
         if (!emailError && !passwordError && validateLogin.status == 'success') {
             console.log('in login handle')
@@ -110,7 +109,7 @@ const Login: React.FC = () => {
                 LOGIN
             </button>
             <p className="text-center">
-                Don't have an Account?{' '}
+                Dont have an Account?{' '}
                 <button
                     className="text-blue-500 hover:text-blue-700 font-semibold"
                     onClick={handleSignUp}

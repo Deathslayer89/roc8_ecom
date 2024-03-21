@@ -235,14 +235,18 @@ const Form: React.FC = () => {
         console.log('Logging in with:', formData);
         router.push('/login');
     };
-    function getCookie(name): string {
+    function getCookie(name: string): string {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) {
-            console.log(parts.pop().split(';').shift());
-            return parts.pop().split(';').shift();
+          const cookieValue = parts.pop()?.split(';').shift();
+          if (cookieValue !== undefined) {
+            console.log(cookieValue);
+            return cookieValue;
+          }
         }
-    }
+        return '';
+      }
 
     const currentUser = getCookie('currUser');
     console.log(currentUser);
