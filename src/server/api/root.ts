@@ -8,7 +8,6 @@ import { categoryRouter } from '~/server/api/routers/category'
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  post: postRouter,
   auth: authRouter,
   category: categoryRouter
 });
