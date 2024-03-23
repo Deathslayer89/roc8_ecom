@@ -13,7 +13,7 @@ const Items = () => {
   ];
 
   return (
-    <div className="flex space-x-3 justify-center">
+    <div className="flex space-x-6 justify-items-center">
       {values.map((item) => (
         <div key={item.label} className="flex items-center space-x-1">
           <span>{item.label}</span>
